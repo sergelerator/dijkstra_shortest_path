@@ -26,15 +26,19 @@ class Dijkstra::Graph
   def label_everything_from(source)
     reset
     source.label = 0
-    ordered_set = nodes.map{|n| n }
+    ordered_set = nodes.clone
 
     while !ordered_set.empty?
-      ordered_set.sort_by{ |e| e.label }
+      ordered_set.sort_by! { |e| e.label }
       next_node = ordered_set.shift
       next_node.measure_neighbours_distance
     end
   end
 
   def shortest_path(source, destination)
+    label_everything_from(source)
+    (path = []) << destination
+    path << path.last.previous_node until path.last.previous_node.nil?
+    path.reverse
   end
 end

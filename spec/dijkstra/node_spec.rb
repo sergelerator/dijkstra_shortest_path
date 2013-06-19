@@ -20,9 +20,9 @@ describe Dijkstra::Node do
       subject.reset
     end
 
-    context "when label is nil" do
+    context "when label is Infinity" do
       before :each do
-        subject.label = nil
+        subject.label = Dijkstra::Infinity
       end
 
       it "sets distance_to_this_node to label" do
@@ -100,77 +100,38 @@ describe Dijkstra::Node do
         end
       end
 
-      it "returns the node at the end of each path" do
-        node_1 = Dijkstra::Node.new
-        node_2 = Dijkstra::Node.new
-        path_1 = Dijkstra::Path.new(subject, node_1, 15)
-        path_2 = Dijkstra::Path.new(subject, node_2, 5)
+      describe "paths's end" do
+        let(:neighbours) { subject.neighbours }
 
-        node_1.paths << path_1
-        node_2.paths << path_2
+        before :each do
+          @node_1 = Dijkstra::Node.new
+          @node_2 = Dijkstra::Node.new
+          @path_1 = Dijkstra::Path.new(subject, @node_1, 15)
+          @path_2 = Dijkstra::Path.new(subject, @node_2, 5)
 
-        subject.instance_eval{ @paths = [] }
+          @node_1.paths << @path_1
+          @node_2.paths << @path_2
 
-        subject.paths << path_1
-        subject.paths << path_2
+          subject.instance_eval{ @paths = [] }
 
-        subject.neighbours[0].should be(node_1)
-        subject.neighbours[1].should be(node_2)
-        node_1.neighbours[0].should be(subject)
-        node_2.neighbours[0].should be(subject)
-      end
-    end
-
-  end
-
-  describe "unvisited_neighbours" do
-
-    context "when 3 unvisited neighbours exist, no visited ones" do
-      before :each do
-        subject.reset
-
-        subject.instance_eval do
-          @paths = []
-          3.times do
-            @paths << Dijkstra::Path.new(self, Dijkstra::Node.new, 4)
-          end
-        end
-      end
-
-      it "returns 3 nodes" do
-        subject.unvisited_neighbours.length.should eq(3)
-      end
-
-      it "returns only unvisited nodes" do
-        subject.unvisited_neighbours.each do |n|
-          n.visited?.should be(false)
-        end
-      end
-    end
-
-    context "when 1 unvisited neighbours exist, 2 visited ones" do
-      before :each do
-        subject.reset
-
-        subject.instance_eval do
-          @paths = []
-          @paths << Dijkstra::Path.new(self, Dijkstra::Node.new, 4)
-          2.times do
-            visited_node = Dijkstra::Node.new
-            visited_node.visit
-            @paths << Dijkstra::Path.new(self, visited_node, 4)
-          end
+          subject.paths << @path_1
+          subject.paths << @path_2
         end
 
-      end
+        it "has node_1 at neighbours[0]" do
+          neighbours[0].should be(@node_1)
+        end
 
-      it "returns 1 nodes" do
-        subject.unvisited_neighbours.length.should eq(1)
-      end
+        it "has node_2 at neighbours[1]" do
+          neighbours[1].should be(@node_2)
+        end
 
-      it "returns only unvisited nodes" do
-        subject.unvisited_neighbours.each do |n|
-          n.visited?.should be(false)
+        it "has subject at node_1's neighbours[0]" do
+          @node_1.neighbours[0].should be(subject)
+        end
+
+        it "has subject at node_2's neighbors[0]" do
+          @node_2.neighbours[0].should be(subject)
         end
       end
     end
@@ -207,9 +168,6 @@ describe Dijkstra::Node do
           subject.neighbours[2].label.should eq(9)
         end
 
-      end
-
-      context "when source has 3 possible ways of reaching target" do
       end
 
     end

@@ -30,48 +30,179 @@ describe Dijkstra::Graph do
     end
 
     describe "neighbours" do
-      let(:nodes){subject.nodes}
+      let(:nodes){ subject.nodes }
 
-      it "should return all the set neighbours of first node" do
-        s = nodes[0].neighbours
-        s.length.should eq(3)
-        s[0].should eq(nodes[1])
-        s[1].should eq(nodes[5])
-        s[2].should eq(nodes[2])
+      context "of first node" do
+        let(:neighbours) { nodes[0].neighbours }
+
+        it "has a length of 3" do
+          neighbours.length.should eq(3)
+        end
+
+        it "has nodes[1] at neighbours[0]" do
+          neighbours[0].should eq(nodes[1])
+        end
+
+        it "has nodes[5] at neighbours[1]" do
+          neighbours[1].should eq(nodes[5])
+        end
+
+        it "has nodes[2] at neighbours[2]" do
+          neighbours[2].should eq(nodes[2])
+        end
       end
 
-      it "should return all the set neighbours of second node" do
-        s = nodes[1].neighbours
-        s.length.should eq(3)
-        s[0].should eq(nodes[0])
-        s[1].should eq(nodes[2])
-        s[2].should eq(nodes[3])
+      context "of second node" do
+        let(:neighbours) { nodes[1].neighbours }
+
+        it "has a length of 3" do
+          neighbours.length.should eq(3)
+        end
+
+        it "has nodes[0] at neighbours[0]" do
+          neighbours[0].should eq(nodes[0])
+        end
+
+        it "has nodes[2] at neighbours[1]" do
+          neighbours[1].should eq(nodes[2])
+        end
+
+        it "has nodes[3] at neighbours[2]" do
+          neighbours[2].should eq(nodes[3])
+        end
       end
     end
 
     context "labeling everything from first node" do
+      let(:nodes) { subject.nodes }
       before :each do
-        subject.label_everything_from(subject.nodes[0])
+        subject.label_everything_from(nodes[0])
       end
 
       it "should label the node at index 0 with a '0'" do
-        subject.nodes[0].label.should eq(0)
+        nodes[0].label.should eq(0)
       end
 
       it "should label the node at index 1 with a '7'" do
-        subject.nodes[1].label.should eq(7)
+        nodes[1].label.should eq(7)
       end
 
       it "should label the node at index 2 with a '9'" do
-        subject.nodes[2].label.should eq(9)
+        nodes[2].label.should eq(9)
       end
 
       it "should label the node at index 3 with a '20'" do
-        subject.nodes[3].label.should eq(20)
+        nodes[3].label.should eq(20)
       end
 
       it "should label the node at index 5 with a '11'" do
-        subject.nodes[5].label.should eq(11)
+        nodes[5].label.should eq(11)
+      end
+    end
+
+    describe "shortest_path" do
+      let(:nodes) { subject.nodes }
+
+      context "from nodes[0] to nodes[4]" do
+        let(:path) { subject.shortest_path(nodes.first, nodes[4]) }
+
+        it "has a length of 4" do
+          path.length.should be(4)
+        end
+
+        it "has nodes[0] at path[0]" do
+          path[0].should be(nodes[0])
+        end
+
+        it "has nodes[2] at path[1]" do
+          path[1].should be(nodes[2])
+        end
+
+        it "has nodes[5] at path[2]" do
+          path[2].should be(nodes[5])
+        end
+
+        it "has nodes[4] at path[3]" do
+          path[3].should be(nodes[4])
+        end
+      end
+
+      context "from nodes[3] to nodes[5]" do
+        let(:path) { subject.shortest_path(nodes[3], nodes[5]) }
+
+        describe "neighbours of nodes[2]" do
+          it "has a length of 4" do
+            nodes[2].neighbours.length.should be(4)
+          end
+
+          it "includes nodes[5]" do
+            nodes[2].neighbours.include?(nodes[5]).should be
+          end
+
+          it "includes nodes[0]" do
+            nodes[2].neighbours.include?(nodes[0]).should be
+          end
+
+          it "includes nodes[1]" do
+            nodes[2].neighbours.include?(nodes[1]).should be
+          end
+
+          it "includes nodes[3]" do
+            nodes[2].neighbours.include?(nodes[3]).should be
+          end
+
+          it "is nodes[2] at neighbours[1]" do
+            nodes[3].neighbours[1].should be(nodes[2])
+          end
+        end
+
+        describe "neighbours of nodes[3]" do
+          it "has a length of 3" do
+            nodes[3].neighbours.length.should be(3)
+          end
+
+          it "is nodes[1] at neighbours[0]" do
+            nodes[3].neighbours[0].should be(nodes[1])
+          end
+
+          it "is nodes[2] at neighbours[1]" do
+            nodes[3].neighbours[1].should be(nodes[2])
+          end
+        end
+
+        context "prebuilt path" do
+          before :each do
+            path
+          end
+
+          it "has the label 15 at nodes[1]" do
+            nodes[1].label.should be(15)
+          end
+
+          it "has the label 11 at nodes[2]" do
+            nodes[2].label.should be(11)
+          end
+
+          it "has the label 13 at nodes[5]" do
+            nodes[5].label.should be(13)
+          end
+        end
+
+        it "has a length of 3" do
+          path.length.should be(3)
+        end
+
+        it "has nodes[3] at path[0]" do
+          path[0].should be(nodes[3])
+        end
+
+        it "has nodes[2] at path[1]" do
+          path[1].should be(nodes[2])
+        end
+
+        it "has nodes[5] at path[2]" do
+          path[2].should be(nodes[5])
+        end
       end
     end
   end
@@ -99,20 +230,24 @@ describe Dijkstra::Graph do
     describe "neighbours" do
       let(:nodes){subject.nodes}
 
-      it "should return all the set neighbours of first node" do
-        s = nodes[0].neighbours
-        s.length.should eq(4)
-        s[0].should eq(nodes[1])
-        s[1].should eq(nodes[5])
-        s[2].should eq(nodes[2])
-      end
+      context "of first node" do
+        let(:neighbours) { nodes[0].neighbours }
 
-      it "should return all the set neighbours of second node" do
-        s = nodes[1].neighbours
-        s.length.should eq(3)
-        s[0].should eq(nodes[0])
-        s[1].should eq(nodes[2])
-        s[2].should eq(nodes[3])
+        it "has a length of 4" do
+          neighbours.length.should eq(4)
+        end
+
+        it "has nodes[1] at neighbours[0]" do
+          neighbours[0].should eq(nodes[1])
+        end
+
+        it "has nodes[5] at neighbours[1]" do
+          neighbours[1].should eq(nodes[5])
+        end
+
+        it "has nodes[2] at neighbours[2]" do
+          neighbours[2].should eq(nodes[2])
+        end
       end
     end
 
