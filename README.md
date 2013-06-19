@@ -45,3 +45,7 @@ Methods:
     - reset                               # resets each node in the nodes collection
     - label_everything_from(source)       # labels shortest distance to each node from source
     - shortest_path(source, destination)  # returns the set of nodes that describe the shortest path from source to destination
+
+### Infinity
+
+An Infinity constant is used to make it easier for the `shortest_path` method to be more clear and adjusted to the algorithm definition. It makes use of Ruby's ability to represent this value with the operation: ` 1.0 / 0.0 `
